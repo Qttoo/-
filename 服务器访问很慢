@@ -1,0 +1,45 @@
+没有请求进来首先检查磁盘空间是否满了，df -Th, df -lh
+
+可以先做访问测试，看看各阶段用的时间
+
+sh-3.2# cat curl_time.txt
+\n
+    	      http: %{http_code}\n
+               dns: %{time_namelookup}s\n
+          redirect: %{time_redirect}s\n
+      time_connect: %{time_connect}s\n
+   time_appconnect: %{time_appconnect}s\n
+  time_pretransfer: %{time_pretransfer}s\n
+time_starttransfer: %{time_starttransfer}s\n
+     size_download: %{size_download}bytes\n
+    speed_download: %{speed_download}B/s\n
+                  ----------\n
+        time_total: %{time_total}s\n
+\n
+
+执行命令：
+#curl -o /dev/null -w "@curl_time.txt"  -s  -H "Content-Type: application/json" https://www.adxxxx24.com
+    	      http: 200
+               dns: 0.004827s
+          redirect: 0.000000s
+      time_connect: 0.184774s
+   time_appconnect: 0.576664s
+  time_pretransfer: 0.578078s
+time_starttransfer: 1.834407s
+     size_download: 88136bytes
+    speed_download: 35972.000B/s
+                  ----------
+        time_total: 2.450087s
+
+上面是输出结果
+不要-o /dev/null 请求到的网页都会打印出来
+
+检查服务器负载，磁盘IO，redis配置文件的连接数，mysql配置文件的连接数，数据库max_connections，
+
+查看服务器TIME_WAIT连接，ESTABLISHED连接，系统最大文件数limits.conf，
+
+检查服务器nfs挂载
+
+
+
+
