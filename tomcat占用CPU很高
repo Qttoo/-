@@ -86,8 +86,11 @@ Exception creating connection to: 16525; nested exception is:
 	at java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:615)
 	at java.lang.Thread.run(Thread.java:745)
 
-top -H -p 16525，观察一会，可以看到几个线程ID一直不变，
-16770 转换为十六进制是0x4182
+top -H -p 16525，观察一会，可以看到几个线程ID一直不变，拿其中一个16770来找问题
+进程ID是十进制表示的，我们用命令把id转为十六进制：
+[root@VM_12_106_centos ~]# printf '%x \n' 16770
+4182
+
 [root@VM_12_106_centos ~]#jstack  16525  | grep  -B5 -A30 '0x4182' 或者 grep  -B5 -A30 '0x4182' jstack.log
 at java.util.concurrent.ThreadPoolExecutor.getTask(ThreadPoolExecutor.java:1068)
 	at java.util.concurrent.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1130)
