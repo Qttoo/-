@@ -1,0 +1,50 @@
+系统：centos 7.2
+软件：ansible 2.4.2.0
+日期：2018-12-11
+
+创建用户，没有密码，一般是登录不了：
+
+ansible  cache   -m  user  -a  'name=test  shell=/bin/bash  home=/home/test/  state=present'
+
+state=absent为删除用户
+cache为主机分组的组名，在/etc/ansible/hosts里配置
+name的值是用户名
+home是对应的用户家目录
+
+[cache]
+192.168.1.94 ansible_ssh_port=5222
+ansible_ssh_port指定ssh的端口，默认是22，没这个参数指定就会用22
+
+
+密码加密
+python -c 'import crypt; print (crypt.crypt("your_passwd","Your_name"))'
+apnK4rIpkaoHo
+用上面的命令加密密码，然后创建有密码的用户
+ansible  cache  -m  user  -a  'name=test  shell=/bin/bash password=apnK4rIpkaoHo  home=/home/test/  state=present'
+把上面的python命令生成的加密密码填在password这个字段的后面
+-m 指定ansible的模块
+ansible-doc -l 可以查看所有的模块
+ansible-doc -l | grep user
+user                                      Manage user accounts
+
+ssh -p 5222 test@192.168.1.94 
+输入密码，就可以登录了
+
+
+创建play-book，批量修改用户的密码：
+/etc/ansible/ch_user_pass.yml
+- hosts: cache
+  gather_facts: false
+  tasks:
+  - name: Change password
+    user: name={{ myname }}  password={{ chpass | password_hash('sha512') }}  update_password=always
+(yml文件要严格按要求缩进)
+
+chpass.yml的名字自己随便定义就行，要用yml结束
+
+修改用户密码:
+cd /etc/ansible
+ansible-playbook ch_user_pass.yml -e "myname=test chpass=123456"
+经过测试，发现chpass的值不能包含叹号(!)，如用123456! 执行的时候就会报错
+
+
